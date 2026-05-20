@@ -24,7 +24,7 @@ app.get("/", (req, res) => {
     console.log(connection.state);
     connection.query("SELECT * FROM Pret_bancaire;", (err, rows, fields) => {
         if (err) throw err;
-        console.log("Ici : ", rows[1]);
+        console.log("Ici : ", rows);
     });
 })
 
