@@ -1,4 +1,4 @@
-// Ici les fonctions qui vont parler à MySql<
+// Ici les fonctions qui vont parler à MySql
 const db = require('../config/db');
 
 const pretModel = {

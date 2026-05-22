@@ -1,10 +1,10 @@
-// On va mettre ici la logique des traitements des requêtes
+// On va mettre ici la logique des traitements des requêtes,, importe le Models
 const db = require('../config/db');
+const pretmodel = require('../models/pretModel');
 
 const pretController = {
     getAllPret: (req, res) => {
-        const sql = 'SELECT * FROM pret_bancaire';
-        db.query(sql, (err, results) => {
+        pretmodel.getAllPret((err, results) => {
             if (err) {
                 console.error('Erreur lors de la récupération des prêts bancaires:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });
@@ -14,19 +14,25 @@ const pretController = {
     },
     createPret: (req, res) => {
         const { num_compte, nom_client, nom_banque, montant, date_pret, taux_pret } = req.body;
-        const sql = 'INSERT INTO pret_bancaire (num_compte, nom_client, nom_banque, montant, date_pret, taux_pret) VALUES (?, ?, ?, ?, ?, ?)';
-        db.query(sql, [num_compte, nom_client, nom_banque, montant, date_pret, taux_pret], (err, result) => {
+        pretmodel.createPret(num_compte, nom_client, nom_banque, montant, date_pret, taux_pret, (err, result) => {
             if (err) {
                 console.error('Erreur lors de la création du prêt bancaire:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });
             }
-            res.status(201).json({ id_pret: result.insertId, num_compte, nom_client, nom_banque, montant, date_pret, taux_pret });
+            res.status(201).json({
+                id_pret: result.insertId,
+                num_compte,
+                nom_client,
+                nom_banque,
+                montant,
+                date_pret,
+                taux_pret
+            });
         });
     },
     getPretById: (req, res) => {
         const { id_pret } = req.params;
-        const sql = 'SELECT * FROM pret_bancaire WHERE id_pret = ?';
-        db.query(sql, [id_pret], (err, results) => {
+        pretmodel.getPretById(id_pret, (err, results) => {
             if (err) {
                 console.error('Erreur lors de la récupération du prêt bancaire:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });
@@ -40,8 +46,7 @@ const pretController = {
     updatePret: (req, res) => {
         const { id_pret } = req.params;
         const { num_compte, nom_client, nom_banque, montant, date_pret, taux_pret } = req.body;
-        const sql = 'UPDATE pret_bancaire SET num_compte = ?, nom_client = ?, nom_banque = ?, montant = ?, date_pret = ?, taux_pret = ? WHERE id_pret = ?';
-        db.query(sql, [num_compte, nom_client, nom_banque, montant, date_pret, taux_pret, id_pret], (err) => {
+        pretmodel.updatePret(id_pret, num_compte, nom_client, nom_banque, montant, date_pret, taux_pret, (err) => {
             if (err) {
                 console.error('Erreur lors de la mise à jour du prêt bancaire:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });
@@ -51,8 +56,7 @@ const pretController = {
     },
     deletePret: (req, res) => {
         const { id_pret } = req.params;
-        const sql = 'DELETE FROM pret_bancaire WHERE id_pret = ?';
-        db.query(sql, [id_pret], (err) => {
+        pretmodel.deletePret(id_pret, (err) => {
             if (err) {
                 console.error('Erreur lors de la suppression du prêt bancaire:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });

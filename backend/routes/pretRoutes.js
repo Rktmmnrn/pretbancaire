@@ -4,6 +4,9 @@ const router = express.Router();
 
 const pretController = require('../controller/pretController');
 
+router.get('/', (req, res) => {
+    res.send('Salut toi...');
+});
 router.get('/pret', pretController.getAllPret);
 router.post('/pret', pretController.createPret);
 router.get('/pret/:id_pret', pretController.getPretById);
