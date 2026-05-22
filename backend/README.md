@@ -18,5 +18,8 @@ backend/
 └── package.json
 
 ## APIs
+Les routes sont préfixé par /api
+/api => racine
+/api/pret => requête GET
 
 ## but
