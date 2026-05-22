@@ -10,7 +10,6 @@ const connection = mysql.createPool({
     database: process.env.DATABASE_NAME
 });
 
-
 connection.getConnection((err, conn) => {
     if (err) {
         console.error('Erreur de connexion à la base de données:', err);
@@ -19,7 +18,7 @@ connection.getConnection((err, conn) => {
         connection.state = 'database connected';
         conn.release(); // libérer la connexion après utilisation
     }
+    console.log(connection.state);
 });
 
-console.log(connection.state);
 module.exports = connection;
