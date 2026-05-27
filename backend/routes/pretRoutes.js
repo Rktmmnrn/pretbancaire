@@ -13,5 +13,5 @@ router.get('/pret/:id_pret', pretController.getPretById);
 router.put('/pret/:id_pret', pretController.updatePret);
 router.delete('/pret/:id_pret', pretController.deletePret);
 
-console.log("...pretRoutes");
+// console.log("...pretRoutes");
 module.exports = router;

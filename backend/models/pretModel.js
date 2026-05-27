@@ -24,5 +24,5 @@ const pretModel = {
     }
 };
 
-console.log("...pretModel");
+// console.log("...pretModel");
 module.exports = pretModel;

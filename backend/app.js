@@ -7,5 +7,5 @@ app.use(cors());
 app.use(express.json());
 app.use('/api', pretRoutes); // préfixé les routes
 
-console.log("...app");
+// console.log("...app");
 module.exports = app;
