@@ -21,14 +21,14 @@ const contentSections = document.querySelectorAll('.content-section');
 navLinks.forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
-        
+
         // Retirer la classe active de tous les liens
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
-        
+
         // Masquer toutes les sections
         contentSections.forEach(section => section.classList.remove('active'));
-        
+
         // Afficher la section correspondante
         const sectionId = link.getAttribute('data-section');
         const section = document.getElementById(sectionId);
@@ -109,14 +109,14 @@ async function editPret(id_pret) {
         document.getElementById('edit_nom_client').value = pret.nom_client;
         document.getElementById('edit_nom_banque').value = pret.nom_banque;
         document.getElementById('edit_montant').value = pret.montant;
-        
+
         // Formater la date correctement pour le champ date (format YYYY-MM-DD)
         const dateObj = new Date(pret.date_pret);
         const year = dateObj.getFullYear();
         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
         const day = String(dateObj.getDate()).padStart(2, '0');
         document.getElementById('edit_date_pret').value = `${year}-${month}-${day}`;
-        
+
         document.getElementById('edit_taux_pret').value = (pret.taux_pret * 100).toFixed(4);
 
         // Afficher le modal
@@ -245,6 +245,11 @@ function updateStats() {
         summaryCards[0].querySelector('.value').textContent = total.toFixed(2) + ' €';
         summaryCards[1].querySelector('.value').textContent = minimal.toFixed(2) + ' €';
         summaryCards[2].querySelector('.value').textContent = maximal.toFixed(2) + ' €';
+    } else {
+        const summaryCards = document.querySelectorAll('.summary-card');
+        summaryCards[0].querySelector('.value').textContent = '0.00 €';
+        summaryCards[1].querySelector('.value').textContent = '0.00 €';
+        summaryCards[2].querySelector('.value').textContent = '0.00 €';
     }
 }
 
