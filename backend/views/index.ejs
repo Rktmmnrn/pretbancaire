@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Prêts Bancaires</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1 class="sidebar-title"><i class="fas fa-building"></i> Prêts Bancaires</h1>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-link active" data-section="dashboard">
+                    <span class="nav-icon"><i class="fas fa-chart-bar"></i></span>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+                <a href="#" class="nav-link" data-section="liste">
+                    <span class="nav-icon"><i class="fas fa-list"></i></span>
+                    <span class="nav-text">Liste des prêts</span>
+                </a>
+                <a href="#" class="nav-link" data-section="ajout">
+                    <span class="nav-icon"><i class="fas fa-plus"></i></span>
+                    <span class="nav-text">Ajouter un prêt</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="top-header">
+                <h2 class="page-title">Gestion des Prêts Bancaires</h2>
+            </header>
+
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <div class="dashboard-container">
+                    <!-- Statistiques Cards -->
+                    <div class="summary-section">
+                        <div class="summary-card">
+                            <h3>Total à Payer</h3>
+                            <p class="value"><%= stats.total.toFixed(2) %> €</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Montant Minimal</h3>
+                            <p class="value"><%= stats.minimal.toFixed(2) %> €</p>
+                        </div>
+                        <div class="summary-card">
+                            <h3>Montant Maximal</h3>
+                            <p class="value"><%= stats.maximal.toFixed(2) %> €</p>
+                        </div>
+                    </div>
+
+                    <!-- Graphique -->
+                    <div class="charts-section">
+                        <h3>Visualisation des Montants à Payer</h3>
+                        <div class="chart-wrapper">
+                            <canvas id="barChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Liste Section -->
+            <section id="liste" class="content-section">
+                <div class="table-section">
+                    <h3>Liste des prêts</h3>
+                    <div class="table-wrapper">
+                        <table id="pretsTable" class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>N° Compte</th>
+                                    <th>Nom Client</th>
+                                    <th>Nom Banque</th>
+                                    <th>Montant (€)</th>
+                                    <th>Date Prêt</th>
+                                    <th>Taux (%)</th>
+                                    <th>Montant à Payer (€)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% prets.forEach(pret => { %>
+                                    <tr data-id="<%= pret.id_pret %>">
+                                        <td><%= pret.num_compte %></td>
+                                        <td><%= pret.nom_client %></td>
+                                        <td><%= pret.nom_banque %></td>
+                                        <td class="amount"><%= parseFloat(pret.montant).toFixed(2) %></td>
+                                        <td><%= new Date(pret.date_pret).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).charAt(0).toUpperCase() + new Date(pret.date_pret).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).slice(1) %></td>
+                                        <td class="percent"><%= (pret.taux_pret * 100).toFixed(2) %></td>
+                                        <td class="amount montant-payer"><%= parseFloat(pret.montant_a_payer).toFixed(2) %></td>
+                                        <td class="actions">
+                                            <button class="btn btn-edit" onclick="editPret(<%= pret.id_pret %>)"><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-delete" onclick="deletePret(<%= pret.id_pret %>)"><i class="fas fa-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                <% }); %>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Ajout Section -->
+            <section id="ajout" class="content-section">
+                <div class="form-section">
+                    <h3>Ajouter un nouveau prêt</h3>
+                    <form id="pretForm" class="form-container">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="num_compte">N° Compte :</label>
+                                <input type="text" id="num_compte" name="num_compte" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nom_client">Nom Client :</label>
+                                <input type="text" id="nom_client" name="nom_client" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="nom_banque">Nom Banque :</label>
+                                <input type="text" id="nom_banque" name="nom_banque" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="montant">Montant (€) :</label>
+                                <input type="number" id="montant" name="montant" step="0.01" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="date_pret">Date Prêt :</label>
+                                <input type="date" id="date_pret" name="date_pret" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="taux_pret">Taux Prêt (%) :</label>
+                                <input type="number" id="taux_pret" name="taux_pret" step="0.0001" required>
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Ajouter</button>
+                    </form>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modal pour l'édition -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeEditModal()">&times;</span>
+            <h2>Modifier le prêt</h2>
+            <form id="editForm" class="form-container">
+                <input type="hidden" id="edit_id_pret">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_num_compte">N° Compte :</label>
+                        <input type="text" id="edit_num_compte" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_nom_client">Nom Client :</label>
+                        <input type="text" id="edit_nom_client" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_nom_banque">Nom Banque :</label>
+                        <input type="text" id="edit_nom_banque" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_montant">Montant (€) :</label>
+                        <input type="number" id="edit_montant" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_date_pret">Date Prêt :</label>
+                        <input type="date" id="edit_date_pret" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_taux_pret">Taux Prêt (%) :</label>
+                        <input type="number" id="edit_taux_pret" step="0.0001" required>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Mettre à jour</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()"><i class="fas fa-times"></i> Annuler</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/js/app.js"></script>
+</body>
+</html>
