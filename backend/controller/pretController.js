@@ -9,21 +9,23 @@ const pretController = {
                 console.error('Erreur lors de la récupération des prêts bancaires:', err);
                 return res.status(500).send('Erreur serveur');
             }
-            
+
             // Calcul du montant à payer pour chaque prêt
             const pretsWithCalculations = results.map(pret => ({
                 ...pret,
                 montant_a_payer: pret.montant * (1 + pret.taux_pret)
             }));
-            
+
             // Calcul des statistiques
             const montantAPayer = pretsWithCalculations.map(p => p.montant_a_payer);
-            const stats = {
-                total: montantAPayer.reduce((a, b) => a + b, 0),
-                minimal: Math.min(...montantAPayer),
-                maximal: Math.max(...montantAPayer)
-            };
-            
+            const stats = montantAPayer.length > 0
+                ? {
+                    total: montantAPayer.reduce((a, b) => a + b, 0),
+                    minimal: Math.min(...montantAPayer),
+                    maximal: Math.max(...montantAPayer)
+                }
+                : { total: 0, minimal: 0, maximal: 0 };
+
             res.render('index', { prets: pretsWithCalculations, stats });
         });
     },
@@ -33,13 +35,13 @@ const pretController = {
                 console.error('Erreur lors de la récupération des prêts bancaires:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });
             }
-            
+
             // Calcul du montant à payer pour chaque prêt
             const pretsWithCalculations = results.map(pret => ({
                 ...pret,
                 montant_a_payer: pret.montant * (1 + pret.taux_pret)
             }));
-            
+
             res.json(pretsWithCalculations);
         });
     },
@@ -87,13 +89,13 @@ const pretController = {
                 console.error('Erreur lors de la mise à jour du prêt bancaire:', err);
                 return res.status(500).json({ error: 'Erreur serveur' });
             }
-            res.json({ 
-                id_pret, 
-                num_compte, 
-                nom_client, 
-                nom_banque, 
-                montant, 
-                date_pret, 
+            res.json({
+                id_pret,
+                num_compte,
+                nom_client,
+                nom_banque,
+                montant,
+                date_pret,
                 taux_pret,
                 montant_a_payer: montant * (1 + taux_pret)
             });

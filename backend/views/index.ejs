@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
+
 <body>
     <div class="app-container">
         <!-- Sidebar -->
@@ -44,23 +46,34 @@
                     <div class="summary-section">
                         <div class="summary-card">
                             <h3>Total à Payer</h3>
-                            <p class="value"><%= stats.total.toFixed(2) %> €</p>
+                            <p class="value">
+                                <%= stats.total.toFixed(2) %> €
+                            </p>
                         </div>
                         <div class="summary-card">
                             <h3>Montant Minimal</h3>
-                            <p class="value"><%= stats.minimal.toFixed(2) %> €</p>
+                            <p class="value">
+                                <%= stats.minimal.toFixed(2) %> €
+                            </p>
                         </div>
                         <div class="summary-card">
                             <h3>Montant Maximal</h3>
-                            <p class="value"><%= stats.maximal.toFixed(2) %> €</p>
+                            <p class="value">
+                                <%= stats.maximal.toFixed(2) %> €
+                            </p>
                         </div>
                     </div>
 
                     <!-- Graphique -->
                     <div class="charts-section">
                         <h3>Visualisation des Montants à Payer</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="barChart"></canvas>
+                        <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                            <div class="chart-wrapper" style="flex: 2; min-width: 280px;">
+                                <canvas id="barChart"></canvas>
+                            </div>
+                            <div class="chart-wrapper" style="flex: 1; min-width: 220px;">
+                                <canvas id="doughnutChart"></canvas>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -85,21 +98,41 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% prets.forEach(pret => { %>
+                                <% prets.forEach(pret=> { %>
                                     <tr data-id="<%= pret.id_pret %>">
-                                        <td><%= pret.num_compte %></td>
-                                        <td><%= pret.nom_client %></td>
-                                        <td><%= pret.nom_banque %></td>
-                                        <td class="amount"><%= parseFloat(pret.montant).toFixed(2) %></td>
-                                        <td><%= new Date(pret.date_pret).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).charAt(0).toUpperCase() + new Date(pret.date_pret).toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).slice(1) %></td>
-                                        <td class="percent"><%= (pret.taux_pret * 100).toFixed(2) %></td>
-                                        <td class="amount montant-payer"><%= parseFloat(pret.montant_a_payer).toFixed(2) %></td>
+                                        <td>
+                                            <%= pret.num_compte %>
+                                        </td>
+                                        <td>
+                                            <%= pret.nom_client %>
+                                        </td>
+                                        <td>
+                                            <%= pret.nom_banque %>
+                                        </td>
+                                        <td class="amount">
+                                            <%= parseFloat(pret.montant).toFixed(2) %>
+                                        </td>
+                                        <td>
+                                            <%= new Date(pret.date_pret).toLocaleDateString('fr-FR', { weekday: 'long' ,
+                                                year: 'numeric' , month: 'long' , day: 'numeric'
+                                                }).charAt(0).toUpperCase() + new
+                                                Date(pret.date_pret).toLocaleDateString('fr-FR', { weekday: 'long' ,
+                                                year: 'numeric' , month: 'long' , day: 'numeric' }).slice(1) %>
+                                        </td>
+                                        <td class="percent">
+                                            <%= (pret.taux_pret * 100).toFixed(2) %>
+                                        </td>
+                                        <td class="amount montant-payer">
+                                            <%= parseFloat(pret.montant_a_payer).toFixed(2) %>
+                                        </td>
                                         <td class="actions">
-                                            <button class="btn btn-edit" onclick="editPret(<%= pret.id_pret %>)"><i class="fas fa-edit"></i></button>
-                                            <button class="btn btn-delete" onclick="deletePret(<%= pret.id_pret %>)"><i class="fas fa-trash"></i></button>
+                                            <button class="btn btn-edit" onclick="editPret(<%= pret.id_pret %>)"><i
+                                                    class="fas fa-edit"></i></button>
+                                            <button class="btn btn-delete" onclick="deletePret(<%= pret.id_pret %>)"><i
+                                                    class="fas fa-trash"></i></button>
                                         </td>
                                     </tr>
-                                <% }); %>
+                                    <% }); %>
                             </tbody>
                         </table>
                     </div>
@@ -141,7 +174,8 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Ajouter</button>
+                        <button type="submit" class="btn btn-primary"><i class="fas fa-plus-circle"></i>
+                            Ajouter</button>
                     </form>
                 </div>
             </section>
@@ -186,11 +220,13 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Mettre à jour</button>
-                <button type="button" class="btn btn-secondary" onclick="closeEditModal()"><i class="fas fa-times"></i> Annuler</button>
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()"><i class="fas fa-times"></i>
+                    Annuler</button>
             </form>
         </div>
     </div>
 
     <script src="/js/app.js"></script>
 </body>
+
 </html>

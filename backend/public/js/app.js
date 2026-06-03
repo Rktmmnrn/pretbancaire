@@ -1,3 +1,13 @@
+function formatDateFR(dateStr) {
+    const date = new Date(dateStr);
+    const formatted = date.toLocaleDateString('fr-FR', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+    return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+}
 // Récupération des éléments du DOM
 const pretForm = document.getElementById('pretForm');
 const editForm = document.getElementById('editForm');
@@ -75,7 +85,7 @@ function addRowToTable(pret) {
         <td>${pret.nom_client}</td>
         <td>${pret.nom_banque}</td>
         <td class="amount">${parseFloat(pret.montant).toFixed(2)}</td>
-        <td>${pret.date_pret}</td>
+        <td>${formatDateFR(pret.date_pret)}</td>
         <td class="percent">${(pret.taux_pret * 100).toFixed(2)}</td>
         <td class="amount montant-payer">${parseFloat(pret.montant_a_payer).toFixed(2)}</td>
         <td class="actions">
@@ -178,7 +188,7 @@ function updateRowInTable(pret) {
             <td>${pret.nom_client}</td>
             <td>${pret.nom_banque}</td>
             <td class="amount">${parseFloat(pret.montant).toFixed(2)}</td>
-            <td>${pret.date_pret}</td>
+            <td>${formatDateFR(pret.date_pret)}</td>
             <td class="percent">${(pret.taux_pret * 100).toFixed(2)}</td>
             <td class="amount montant-payer">${parseFloat(pret.montant_a_payer).toFixed(2)}</td>
             <td class="actions">
@@ -240,10 +250,12 @@ function updateStats() {
 
 // Variables pour les graphiques
 let barChart = null;
+let doughnutChart = null;
 
 // Initialiser les graphiques
 function initCharts() {
     const ctx1 = document.getElementById('barChart').getContext('2d');
+    const ctx2 = document.getElementById('doughnutChart').getContext('2d');
 
     barChart = new Chart(ctx1, {
         type: 'bar',
@@ -259,17 +271,32 @@ function initCharts() {
         },
         options: {
             responsive: true,
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top'
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+            plugins: { legend: { display: true, position: 'top' } },
+            scales: { y: { beginAtZero: true } }
+        }
+    });
+
+    doughnutChart = new Chart(ctx2, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    'rgba(102,126,234,0.8)',
+                    'rgba(118,75,162,0.8)',
+                    'rgba(39,174,96,0.8)',
+                    'rgba(231,76,60,0.8)',
+                    'rgba(52,152,219,0.8)',
+                    'rgba(243,156,18,0.8)',
+                    'rgba(155,89,182,0.8)',
+                    'rgba(26,188,156,0.8)'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: { legend: { display: true, position: 'bottom' } }
         }
     });
 }
@@ -277,26 +304,26 @@ function initCharts() {
 // Mettre à jour les graphiques
 function updateCharts() {
     const rows = pretsTable.querySelectorAll('tbody tr');
-    const amounts = [];
+    const labels = [];
+    const data = [];
 
     rows.forEach(row => {
+        const nomClient = row.querySelector('td:nth-child(2)').textContent;
         const montantAPayer = parseFloat(row.querySelector('.montant-payer').textContent);
-        amounts.push(montantAPayer);
+        labels.push(nomClient);
+        data.push(montantAPayer);
     });
 
-    if (amounts.length > 0) {
-        const total = amounts.reduce((a, b) => a + b, 0);
-        const minimal = Math.min(...amounts);
-        const maximal = Math.max(...amounts);
+    if (barChart) {
+        barChart.data.labels = labels;
+        barChart.data.datasets[0].data = data;
+        barChart.update();
+    }
 
-        const labels = ['Montant Total', 'Montant Minimal', 'Montant Maximal'];
-        const data = [total, minimal, maximal];
-
-        if (barChart) {
-            barChart.data.labels = labels;
-            barChart.data.datasets[0].data = data;
-            barChart.update();
-        }
+    if (doughnutChart) {
+        doughnutChart.data.labels = labels;
+        doughnutChart.data.datasets[0].data = data;
+        doughnutChart.update();
     }
 }
 
