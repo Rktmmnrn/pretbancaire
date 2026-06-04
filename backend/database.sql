@@ -1,12 +1,6 @@
 -- Script de création de la base de données et table Prêt Bancaire
 -- Exécutez ce script dans MySQL Workbench ou via la ligne de commande
 
--- Créer la base de données
-CREATE DATABASE IF NOT EXISTS pretbancaire;
-
--- Utiliser la base de données
-USE pretbancaire;
-
 -- Créer la table Pret_bancaire
 CREATE TABLE IF NOT EXISTS pret_bancaire (
     id_pret INT PRIMARY KEY AUTO_INCREMENT,

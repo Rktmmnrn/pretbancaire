@@ -1,5 +1,5 @@
 // on va mettre la logique de connexion du base de donnée ici
-const mysql = require('mysql');
+const mysql = require('mysql2');
 require('dotenv').config();
 
 const connection = mysql.createPool({
@@ -10,15 +10,23 @@ const connection = mysql.createPool({
     database: process.env.DATABASE_NAME
 });
 
-connection.getConnection((err, conn) => {
-    if (err) {
-        console.error('Erreur de connexion à la base de données:', err);
-        connection.state = 'database error';
-    } else {
-        connection.state = 'database connected';
-        conn.release(); // libérer la connexion après utilisation
-    }
-    console.log(connection.state);
-});
+function connectWithRetry(retries = 10, delay = 3000) {
+    connection.getConnection((err, conn) => {
+        if (err) {
+            console.error(`Erreur de connexion (${retries} tentatives restantes):`, err.code);
+            if (retries > 0) {
+                setTimeout(() => connectWithRetry(retries - 1, delay), delay);
+            } else {
+                console.error('Impossible de se connecter à la base de données.');
+                process.exit(1);
+            }
+        } else {
+            console.log('database connected');
+            conn.release();
+        }
+    });
+}
+
+connectWithRetry();
 
 module.exports = connection;
